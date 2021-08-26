@@ -2,13 +2,18 @@ package com.yoon.yoonrestapispring.domains.events;
 
 import lombok.*;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id")
 @Getter
+@Entity
 public class Event {
 
+    @Id @GeneratedValue
     private Integer id;
     private String name;
     private String description;
@@ -22,7 +27,7 @@ public class Event {
     private int limitOfEnrollment;
     private boolean offline;
     private boolean free;
-    private EventStatus eventStatus;
+    private EventStatus eventStatus = EventStatus.DRAFT;
 
     @Builder
     public Event(Integer id, String name, String description, LocalDateTime beginEnrollmentDateTime, LocalDateTime closeEnrollmentDateTime, LocalDateTime beginEventDateTime, LocalDateTime endEventDateTime, String location, int basePrice, int maxPrice, int limitOfEnrollment, boolean offline, boolean free, EventStatus eventStatus) {
@@ -39,7 +44,11 @@ public class Event {
         this.limitOfEnrollment = limitOfEnrollment;
         this.offline = offline;
         this.free = free;
-        this.eventStatus = eventStatus;
+    }
+
+    public void update() {
+        this.free = this.basePrice == 0 && this.maxPrice == 0;
+        this.offline = this.location != null && !this.location.isBlank();
     }
 
 }
